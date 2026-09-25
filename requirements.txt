@@ -1,0 +1,3 @@
+# No third-party dependencies.
+# Python 3.10+ standard library only: sqlite3, unittest, urllib, re, json,
+# argparse, dataclasses, tempfile, random, datetime.
