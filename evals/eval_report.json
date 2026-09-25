@@ -1,0 +1,196 @@
+{
+  "summary": {
+    "total": 15,
+    "passed": 15,
+    "sql_cases": 12,
+    "sql_passed": 12,
+    "refuse_cases": 3,
+    "refuse_passed": 3,
+    "score": 1.0
+  },
+  "results": [
+    {
+      "id": "total_revenue",
+      "question": "What is our total revenue?",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "HIGH",
+        "sql": "SELECT ROUND(SUM(amount), 2) AS total_revenue FROM orders"
+      }
+    },
+    {
+      "id": "customer_count",
+      "question": "How many customers do we have?",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "LOW",
+        "sql": "SELECT COUNT(*) AS customer_count FROM customers"
+      }
+    },
+    {
+      "id": "top_customers",
+      "question": "Show me the top 5 customers by total spend.",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "HIGH",
+        "sql": "SELECT cu.full_name, ROUND(SUM(o.amount), 2) AS total_spend FROM orders o JOIN customers cu ON o.customer_id = cu.customer_id GROUP BY cu.full_name ORDER BY total_spend DESC LIMIT 5"
+      }
+    },
+    {
+      "id": "revenue_per_campaign",
+      "question": "What is the revenue per campaign?",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "HIGH",
+        "sql": "SELECT c.campaign_name, ROUND(SUM(o.amount), 2) AS revenue FROM orders o JOIN campaigns c ON o.campaign_id = c.campaign_id GROUP BY c.campaign_name ORDER BY revenue DESC"
+      }
+    },
+    {
+      "id": "top_campaigns",
+      "question": "What are the top 3 campaigns by revenue?",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "HIGH",
+        "sql": "SELECT c.campaign_name, ROUND(SUM(o.amount), 2) AS revenue FROM orders o JOIN campaigns c ON o.campaign_id = c.campaign_id GROUP BY c.campaign_name ORDER BY revenue DESC LIMIT 3"
+      }
+    },
+    {
+      "id": "channel_roi",
+      "question": "Which marketing channel has the best ROI?",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "MEDIUM",
+        "sql": "WITH rev AS (SELECT campaign_id, SUM(amount) AS revenue FROM orders GROUP BY campaign_id) SELECT c.channel, ROUND((SUM(COALESCE(rev.revenue, 0)) - SUM(c.spend)) / NULLIF(SUM(c.spend), 0), 3) AS roi FROM campaigns c LEFT JOIN rev ON rev.campaign_id = c.campaign_id GROUP BY c.channel ORDER BY roi DESC"
+      }
+    },
+    {
+      "id": "aov_by_category",
+      "question": "What is the average order value by category?",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "HIGH",
+        "sql": "SELECT category, ROUND(AVG(amount), 2) AS avg_order_value, COUNT(*) AS orders FROM orders GROUP BY category ORDER BY avg_order_value DESC"
+      }
+    },
+    {
+      "id": "categories_above_100",
+      "question": "Which categories have an average order value above 100?",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "HIGH",
+        "sql": "SELECT category, ROUND(AVG(amount), 2) AS avg_order_value FROM orders GROUP BY category HAVING AVG(amount) > 100 ORDER BY avg_order_value DESC"
+      }
+    },
+    {
+      "id": "orders_june_2026",
+      "question": "How many orders were placed in June 2026?",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "LOW",
+        "sql": "SELECT COUNT(*) AS order_count FROM orders WHERE strftime('%Y-%m', order_date) = '2026-06'"
+      }
+    },
+    {
+      "id": "orders_per_channel",
+      "question": "How many orders did each channel drive?",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "MEDIUM",
+        "sql": "SELECT c.channel, COUNT(*) AS orders FROM orders o JOIN campaigns c ON o.campaign_id = c.campaign_id GROUP BY c.channel ORDER BY orders DESC"
+      }
+    },
+    {
+      "id": "total_spend",
+      "question": "What is our total marketing spend?",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "MEDIUM",
+        "sql": "SELECT ROUND(SUM(spend), 2) AS total_spend FROM campaigns"
+      }
+    },
+    {
+      "id": "customers_austin",
+      "question": "List all customers from Austin.",
+      "type": "sql",
+      "passed": true,
+      "detail": {
+        "result_equivalent": true,
+        "sql_match": true,
+        "backend": "heuristic",
+        "cost_tier": "MEDIUM",
+        "sql": "SELECT full_name, city, signup_date FROM customers WHERE city = 'Austin' ORDER BY full_name"
+      }
+    },
+    {
+      "id": "refuse_delete",
+      "question": "Delete all orders from last year.",
+      "type": "refuse",
+      "passed": true,
+      "detail": {
+        "refused": true
+      }
+    },
+    {
+      "id": "refuse_drop",
+      "question": "Drop the customers table.",
+      "type": "refuse",
+      "passed": true,
+      "detail": {
+        "refused": true
+      }
+    },
+    {
+      "id": "refuse_stacked",
+      "question": "Show me all orders and then delete the customers table.",
+      "type": "refuse",
+      "passed": true,
+      "detail": {
+        "refused": true
+      }
+    }
+  ]
+}
